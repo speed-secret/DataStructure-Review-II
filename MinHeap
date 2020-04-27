@@ -1,0 +1,166 @@
+public class Heap {
+    //写在前面
+    //heap 存成一个数组的好处是没有overhead,逻辑上是complete tree，实际上是数组
+    //左孩子，有孩子到parent：(n - 1)/ 2
+    //父母到孩子：2n + 1/ 2n + 2;
+		//最后一个internal node的index 为size / 2 - 1 (套用公式(n - 1) / 2)
+    //heap: 
+    // peek()    o(1)
+    // poll()    o(logn)把最顶这个poll出来然后把底下最右侧最底提上去
+    // offer()   o(logn)从最右下角塞进去，然后在percolate up（）上去
+    // heapify() o(n) 从下往上，从右往左，从第一个internal node开始（internal node就是有子树的node）
+    // when we implement the percolate up and down, we need to check if it is index fits the basic requirement;
+    private static final int ExpandFactor = 2;
+    private static int size;
+    private static int[] array;
+    public void Heap(int cap) {
+        if (cap <= 0) {
+            throw new IllegalArgumentException("cap can not be 0 or less");
+        }
+        int[] array = new int[cap];
+        size = cap;
+    }
+    
+    //假设是一个填满的array，需要几个就填几个
+    public Heap(int[] array) {
+        if (array == null || array.length == 0) {
+            throw new IllegalArgumentException("input array can not be null or empty");
+        }
+        //这里需要完成的是deep copy因为array 这个实现细节不应该暴露给用户
+        this.array = array;
+        size = array.length;
+        heapify();
+    }
+    
+		//heapify
+    //需要overLoad constructor
+    private void heapify() {
+        for (int i = size / 2 - 1; i >= 0; i--) {
+            percolateDown(i);
+        }
+    }
+    //peek()
+    //想想看，用一个array来实现
+    //那么应该怎样通过和 array进行交互来做？
+    //那么用arrayindex来返回嘛，毕竟是第一个嘛！
+    public Integer peek() {
+        if (size == 0) {
+            return null;
+        }
+        return array[0];
+    }
+    
+    //offer()
+    public void offer(int element) {
+        if (capacity == size) {
+            expand();
+        }
+        array[size] = element;
+        //注意，这里size要先加加再percolateUP
+        //这样size - 1才能代表是最后一个
+        size++;
+        percolateUp(size - 1);
+    }
+    
+    //poll()
+    public Integer poll() {
+        if (size == 0) {
+            return null;
+        }
+        int result = array[0];
+        array[0] = array[size - 1];
+        //注意这里的size发生了变化
+        size--;
+        //所以这里要写成一个helper function
+        percolateDown(0);
+        return result;
+    }
+    
+    //expansion
+    public void expand() {
+        int newCapacity = ExpandFactor * array.length;
+        int[] newArray = new int[newCapacity];
+        for (int i = 0; i < array.length; i++) {
+            newArray[i] = array[i];
+        }
+        array = newArray;
+        //之后那个老的array就被gc了
+        //因为现在没有pointer继续指向它了
+    }
+    
+    //size
+    public int size() {
+        return size;
+    }
+    
+    //empty
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    //update
+    //given an index;
+    //return the original value
+    public int update(int index, int newVal) {
+        //check if the index is out of the boundary
+        if (index < 0 || index > size - 1) {
+            throw new ArrayIndexOutOfBoundsException("Invalid Index range");
+        }
+        int oldVal = array[index];
+        array[index] = newVal;
+        //和它的老value进行比较
+        if (oldVal < newVal) {
+            percolateDown(index);
+        } else {
+            percolateUp(index);
+        }
+        return oldVal;
+    }
+    
+    //percolate down()
+    private void percolateDown(int index) {
+        //check if two kids are available
+        //check if index is legal!!
+        //note: size / 2 - 1是complete tree 的最后一个internal node
+        //the while condition that shows the left Node must exist;
+        while(index <= size / 2 - 1) {
+            int l = index * 2 + 1; 
+            int r = index * 2 + 2;
+            //smallestOne among leftChild and rightChild
+            //update swapCandidate if rightChild exists and it is smaller
+            //than leftChild
+            //we need to swap with smaller one below
+            int swapCandiate = l;
+            if (r <= size / 2 - 1 && array[l] > array[r]) {
+                swapCandiate = r;
+            }
+            //swap if it is necessary
+            if (array[swapCandiate] < array[index]) {
+                swap(array, index, swapCandiate);
+            } else {
+                break;
+            }
+            index = swapCandiate;
+        }
+    }
+    
+    private void percolateUp(int index) {
+        //similarly we need to do it by using a while loop
+        //and this is only for one step
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (array[index] < array[parent]) {
+                swap(array, index, parent);
+            } else {
+                break;
+            }
+            index = parent;
+        }
+    }
+    
+    private void swap(int[] array, int left, int right) {
+        int temp = array[left];
+        array[left] = array[right];
+        array[right] = temp;
+    }
+}
