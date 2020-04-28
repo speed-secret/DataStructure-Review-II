@@ -1,0 +1,213 @@
+BFS I
+BFS is mainly used for level order printing
+so it has a very strong relationship with Queue and its variable size
+for instance, here are a question to indicate that:
+
+Get the list of list of keys in a given binary tree layer by layer. Each layer is represented by a list of keys and the keys are traversed from left to right.
+
+Examples
+
+        5
+
+      /    \
+
+    3        8
+
+  /   \        \
+
+ 1     4        11
+
+the result is [ [5], [3, 8], [1, 4, 11] ]
+
+Corner Cases
+
+What if the binary tree is null? Return an empty list of list in this case.
+How is the binary tree represented?
+
+We use the level order traversal sequence with a special symbol "#" denoting the null node.
+
+For Example:
+
+The sequence [1, 2, 3, #, #, 4] represents the following binary tree:
+
+    1
+
+  /   \
+
+ 2     3
+
+      /
+
+    4
+    
+How should we do that?
+//Expand and generate by layer
+//use a list in a single level and make sure evey level has been traversed completely
+//and add those list into the result;
+public class Solution {
+  public List<List<Integer>> layerByLayer(TreeNode root) {
+    List<List<Integer>> list = new ArrayList<>();
+    if (root == null) {
+      return list;
+    }
+    //用一个queue的数据结构来实现队列的进出
+    Deque<TreeNode> queue = new ArrayDeque<>();
+    queue.offer(root);
+    while (!queue.isEmpty()){
+      List<Integer> layer = new ArrayList<>();
+      int size = queue.size();
+      for (int i = 0; i < size; i++) {
+        TreeNode cur = queue.poll();
+        if (cur.left != null){
+          queue.offer(cur.left);
+        } 
+        if (cur.right != null){
+          queue.offer(cur.right);
+        } 
+        layer.add(cur.key);
+      }
+      list.add(new ArrayList<>(layer)); //注意这个是摆在这里，是摆在一个for循环结束之后，而不应改摆进去；
+    }
+    return list;
+  }
+}
+
+Check if a given binary tree is completed. A complete binary tree is one in which every level of the binary tree is completely filled except possibly the last level. Furthermore, all nodes are as far left as possible.
+
+Examples
+
+        5
+
+      /    \
+
+    3        8
+
+  /   \
+
+1      4
+
+is completed.
+
+        5
+
+      /    \
+
+    3        8
+
+  /   \        \
+
+1      4        11
+
+is not completed.
+
+Corner Cases
+
+What if the binary tree is null? Return true in this case.
+How is the binary tree represented?
+
+We use the level order traversal sequence with a special symbol "#" denoting the null node.
+
+For Example:
+
+The sequence [1, 2, 3, #, #, 4] represents the following binary tree:
+
+    1
+
+  /   \
+
+ 2     3
+
+      /
+
+    4
+
+//similarly I gonna use BFS to solve this problem
+//however, I would use a boolean variable: flag
+private boolean checkIfCompleteTree(TreeNode root) {
+  if (root == null) {
+    return true;
+  }
+  Deque<TreeNode> queue = new ArrayDeque<>();
+  queue.offer(root);
+  boolean flag = false;
+  while (!queue.isEmpty()) {
+  //这里没有必要用到size
+  //一个个来验证判断就行；
+    TreeNode cur = queue.poll();
+    if (cur.left == null) {
+      flag = true;
+    else if (flag) {
+      return false;
+    } else {
+      queue.offer(cur.left);
+    }
+    if (cur.right == null) {
+      flag = true;
+    else if (flag) {
+      return false;
+    } else {
+      queue.offer(cur.right);
+    }
+  }
+  return true;
+}
+
+3. find kth smallest element in sorted matrix
+Given a matrix of size N x M. For each row the elements are sorted in ascending order, and for 
+each column the elements are also sorted in ascending order. Find the Kth smallest number in it.
+
+Assumptions
+
+the matrix is not null, N > 0 and M > 0
+K > 0 and K <= N * M
+Examples
+
+{ {1,  3,   5,  7},
+
+  {2,  4,   8,   9},
+
+  {3,  5, 11, 15},
+
+  {6,  8, 13, 18} }
+
+the 5th smallest number is 4
+the 8th smallest number is 6
+
+//BFS in matrix
+//use a new class to store its coordinate and its value;
+static class Cell{
+  int left;
+  int right;
+  int val;
+  public Cell(int left, int right, int val) {
+    this.left = left;
+    this.right = right;
+    this.val = val;
+  }
+}
+
+private int findKthSmallest(int[][] matrix, int k) {
+  if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+    return Integer.MIN_VALUE;
+  }
+  int row = matrix.length;
+  int col = matrix[0].length;
+  PriorityQueue<Cell> minHeap = new PriorityQueue<>(k, 
+  (a, b) -> (a.val - b.val));
+  minHeap.offer(new Cell(0, 0, matrix[0][0]);
+  boolean[][] visited = new boolean[row][col];
+  visited[0][0] = true;
+  while (k > 0) {
+    Cell cur = minHeap.poll();
+    if (cur.left + 1 < row && !visited[cur.left + 1][cur.right]) {
+      minHeap.offer(new Cell(cur.left + 1, cur.right, matrix[cur.left + 1][cur.right]));
+      visited[cur.left + 1][cur.right] = true;
+    }
+    if (cur.right + 1 < col && !visited[cur.left][cur.right + 1]) {
+      minHeap.offer(new Cell(cur.left, cur.right + 1, matrix[cur.left][cur.right + 1]));
+      visited[cur.left][cur.right + 1] = true;
+    }
+    k--;
+  }
+  return minHeap.peek().val;
+}
