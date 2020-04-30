@@ -154,7 +154,18 @@ Examples
 
 {2, 1, 1, 0, 2}, we are not able to reach the end of array
  */
-
+ //in order to use DP to solve this problem
+ //I need to create a boolean array from 0 ~ array.length - 1
+ //But we started from the end part (rightHandside)
+ //which represent if we can jump to the end postion from the current point.
+ //if we do can jump to the end, then we would update as true;
+ //else leave it unchanged.
+ //for the main logic:
+ //1.if itself can canjump to the end just updated true and continue traverse to leftMost;
+ //2.if itself can't directly jump to the end lookup for all the possible candidate if they can jump to them and they can jump to the end
+ //then we should still update true;
+ //return canJump[0] for the result;
+ 
 public class ArrayHopperI {
     public static void main(String[] args) {
         int[] array = new int[]{2, 1, 1, 0, 2};
@@ -183,3 +194,83 @@ public class ArrayHopperI {
         return canJump[0];
     }
 }
+
+5. Array Hopper II
+Given an array A of non-negative integers, you are initially positioned at index 0 of the array. 
+A[i] means the maximum jump distance from index i (you can only jump towards the end of the array). 
+Determine the minimum number of jumps you need to reach the end of array. 
+If you can not reach the end of the array, return -1.
+
+Assumptions
+
+The given array is not null and has length of at least 1.
+Examples
+
+{3, 3, 1, 0, 4}, the minimum jumps needed is 2 (jump to index 1 then to the end of array)
+
+{2, 1, 1, 0, 2}, you are not able to reach the end of array, return -1 in this case.
+//           j        i
+//           2, 1, 1, 0, 2
+//minJump[]  0  -1 -1 -1 -1
+//           0  1  1  -1 -1
+
+//       0  1  2  3  4
+//       3, 3, 1, 0, 4
+//minJump0 -1 -1 -1 -1
+//       0  1  1  1  2
+/*
+core logic
+if (minJump[j] != -1 && array[j] + j >=i) {
+    if (minJump[i] == -1 || minJump[j] + 1 < minJump[i]) {
+        minJum[i] = minJump[j] + 1;
+    }
+}
+*/
+public class ArrayHopperII {
+    public static void main(String[] args) {
+        int[] array = new int[]{3, 3, 1, 0, 4};
+        int[] array2 = new int[]{2, 1, 1, 0, 2};
+        System.out.println(getMinJump(array2));
+    }
+
+    private static int getMinJump(int[] array) {
+        if (array == null || array.length < 1) {
+            return -1;
+        }
+        //minJump array is represent the minimum steps from index 0 to current i position
+        int[] minJump = new int[array.length];
+        minJump[0] = 0;
+        for (int i = 1; i < array.length; i++) {
+            minJump[i] = -1;
+            for (int j = 0; j < i; j++) {
+               if (minJump[j] != -1 && array[j] + j >= i) {
+                    if (minJump[i] == -1 || minJump[i] > minJump[j] + 1) {
+                        minJump[i] = minJump[j] + 1;
+                    }
+               }
+            }
+        }
+        return minJump[array.length - 1];
+     }
+  }
+ //okay let's say there are another solution which works better
+ //just take O(n) time Complexity
+ //traverse the whole array and maintained a length of maximum reachable
+ //use a greedy solution so we can keep update the curRight
+  private static int getMinJump(int[] array) {
+        if (array == null || array.length < 1) {
+            return -1;
+        }
+        int curEnd = 0;
+        int farthest = 0;
+        int minJump = 0;
+        for (int i = 0; i < array.length; i++) {
+         farthest = Math.max(farthest, i + array[i]);
+         if (i == curEnd) {
+            minJump++;
+            curEnd = farthest;
+         }
+        }
+        return minJump;
+      }
+            
