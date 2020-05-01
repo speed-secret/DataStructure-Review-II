@@ -1,0 +1,164 @@
+//DFS is about the foundamental in the tech interview
+//Here are four mother questions that we can deal with 
+//and extend to other questions
+
+1. public class AllSubSet1 {
+//use a StringBuilder to update the current set result
+//to create a String every time we hit the index and 
+//we can get one of its result
+        public List<String> subSets(String set) {
+            List<String> result = new ArrayList<>();
+            if(set == null){
+                return result;
+            }
+            char[] array = set.toCharArray();
+            StringBuilder sb = new StringBuilder();
+            helper(array, sb, result, 0);
+            return result;
+        }
+
+        private void helper(char[] array, StringBuilder sb, List<String> result, int index){
+            //base case
+            if(index == array.length){
+                result.add(sb.toString());
+                return;
+            }
+
+            //recursive rule;
+            sb.append(array[index]);
+            helper(array, sb, result, index + 1);
+            sb.deleteCharAt(sb.length() - 1);
+            helper(array, sb, result, index + 1);
+        }
+
+        public static void main(String[] args){
+            String set = "abc";
+            AllSubSet1 allSubSet1 = new AllSubSet1();
+            System.out.print(allSubSet1.subSets(set));
+        }
+    }
+    T: O(2^n)
+    S: O(1)
+    
+2.
+//All parentheses
+//the base case here has a little different
+//because it has several cases like run out of the empty left brackets
+//or it already used more or equal left bracket with right brackets
+//or it just run out of two sides brackets
+//Also we need to use the length of n to create a new charArray;
+
+import java.util.List;
+import java.util.ArrayList;
+
+public class AllParentheseI {
+    public List<String> validParentheses(int n) {
+        List<String> result = new ArrayList<>();
+        char[] array = new char[2 * n];
+        helper(result, array, 0, 0, 0, n);
+        return result;
+    }
+
+    private void helper(List<String> result, char[] array, int left, int right, int index, int n){
+        //base case
+        if(left == n && right == n){
+            result.add(new String(array));
+            return;
+        }
+        //main logic
+        if(left < n){
+            array[index] = '(';
+            helper(result, array, left + 1, right, index + 1, n);
+        }
+        if(right < left){
+            array[index] = ')';
+            helper(result, array, left, right + 1, index + 1, n);
+        }
+    }
+
+    public static void main(String[] args){
+        int n = 2;//take about 4 seconds
+        AllParentheseI allParentheseI = new AllParentheseI();
+        System.out.print(allParentheseI.validParentheses(n));
+    }
+}
+T:O(2n*2^2n)
+S:O(n)
+
+
+3.All coins
+//Use a List of List to store all the combination
+//DFS check about every solution step by step
+//meaning we should check next solution by delivery the each step
+//and there happened two backTrackings in a method
+//to check the valid base case we should verify its final element if match the money left
+  public static void main(String[] args) {
+    int[] coins = {1, 5, 10, 25};
+    int target = 99;
+    System.out.println(getAllCombinations(coins, target));
+  }
+  
+  private static List<List<Integer>> getAllCombinations(int[] coins, int moneyLeft) {
+    List<List<Integer>> result = new ArrayList<>();
+    if (coins == null || coins.length == 0 || moneyLeft == 0) { 
+      return result;
+    }
+    List<Integer> sol = new ArrayList<>();
+    helper(result, sol, coins, moneyLeft, 0);
+    return result;
+  }
+  
+  private static void helper(List<List<Integer>> result, List<Integer> sol, int[] coins, int moneyLeft, int index) {
+    //base case check
+    if (index == coins.length - 1) {
+      if (moneyLeft % coins[index] == 0) {
+        sol.add(moneyLeft / coins[index]);
+        result.add(new ArrayList<>(sol));
+        sol.remove(sol.size() - 1);
+      }
+      return;
+    }
+    
+    int max = moneyLeft / coins[index];
+    for (int i = 0; i <= max; i++) {
+      sol.add(i);
+      helper(result, sol, coins, moneyLeft - i * coins[index], index + 1);
+      sol.remove(sol.size() - 1);
+    }
+  }
+}
+
+4.All permutation is mainly talked about the questions 
+//which the result is related to the a specific length and the order matter questions
+//so we can get the result from swapping its element according to the index
+public static void main(String[] args) {
+    String s = "adde";
+    System.out.println(getAllPermutation(s));
+}
+
+privates static List<String> getAllPermutation(String s) {  
+  List<String> result = new ArrayList<>();
+  if (s == null) {
+    return result;
+  }
+  char[] charArray = s.toCharArray();
+  helper(charArray, result, 0);
+  return result;
+ }
+ 
+ private void helper(char[] array, List<String> result, int index) {
+  //base case
+  if (index == array.length) {
+    result.add(new String(array));
+    return;
+  }
+  Set<Character> set = new HashSet<>();
+  for (int i = index; i < array.length; i++) {
+    if (set.contains(array[i])) {
+      swap(array, i, index);
+      helper(array, result, index + 1);
+      swap(array, i, index);
+    }
+  }
+}
+  
