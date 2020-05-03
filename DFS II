@@ -234,4 +234,69 @@ l = 1, m = 1, n = 0, all the valid permutations are ["()<>", "(<>)", "<()>", "<>
          }
       }
     }
-            
+ 
+6. All valid permutation with Priority
+Get all valid permutations of l pairs of (), 
+m pairs of <> and n pairs of {}, subject to the priority restriction:
+{} higher than <> higher than ().
+
+Assumptions
+
+    l, m, n >= 0
+
+    l + m + n >= 0
+Examples
+
+    l = 1, m = 1, n = 0, all the valid permutations are ["()<>", "<()>", "<>()"].
+
+    l = 2, m = 0, n = 1, all the valid permutations are [“()(){}”, “(){()}”, “(){}()”, “{()()}”, “{()}()”, “{}()()”].
+    
+    //for this cases despite of several part of the code are pretty much the same
+    //we need to find out the comparison result with its priority
+    //so we need to add a if condition when ever we want to add something
+    private static final char[] bracket = new char[] {
+        '(',')','<','>','{','}'};
+        public List<String> validIII(int l, int m, int n) {
+            List<String> result = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            //now the stack can find out the counter part parentheses
+            Deqeu<Integer> stack = new ArrayDeque<>();
+            int[] remain = new int[]{l, l, m, m, n, n};
+            int length = 2 * l + 2 * m + 2 * n;
+            helper(result, sb, stack, remain, length);
+            return result;
+         }
+         
+         private void helper(List<String> result, StringBuilder sb, 
+         Deque<Integer> stack, int[] remain, int length) {
+            //base case
+            if (sb.length() == length) {
+                result.add(sb.toString());
+                return;
+            }
+            for (int i = 0; i < remain.length; i++) {
+                if (i % 2 == 0) {
+                //要有货先
+                    if (remain[i] > 0 && stack.isEmpty() || stack.peekFirst() > i) {
+                        sb.append(bracket[i]);
+                        stack.offerFirst(i);
+                        remain[i]--;
+                        helper(result, sb, stack, remain, length);
+                        remain[i]++;
+                        stack.pollFirst();
+                        sb.deleteCharAt(sb.length() - 1);
+                    }
+                 } else {
+                    if (!stack.isEmpty() && stack.peekFirst() == i - 1) {
+                         cur.append(bracket[i]);
+                          stack.pollFirst();
+                          remain[i]--;
+                          helper(result, cur, stack, remain, targetLen);
+                          cur.deleteCharAt(cur.length() - 1);
+                          stack.offerFirst(i - 1);
+                          remain[i]++;
+                    }
+                  }
+               }
+           }
+      }
