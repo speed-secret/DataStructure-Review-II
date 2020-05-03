@@ -1,0 +1,177 @@
+//in this charpter,
+//I will talked about the deeper level of DFS
+//in other word, this will challenge our knowledge
+//and our real problem solving skills
+
+1. All subset II
+/*
+Given a set of characters represented by a String, return a
+list containing all subsets of the characters.
+Notice: Each subset returned will be sorted to remove the sequence.
+
+Assumptions
+
+There could be duplicate characters in the original set.
+​Examples
+
+Set = "abc", all the subsets are ["", "a", "ab", "abc", "ac", "b", "bc", "c"]
+Set = "abb", all the subsets are ["", "a", "ab", "abb", "b", "bb"]
+Set = "abab", all the subsets are ["", "a", "aa","aab", "aabb", "ab","abb","b", "bb"]
+Set = "", all the subsets are [""]
+Set = null, all the subsets are []
+ */
+
+public class AllsubsetII {
+    public static void main(String[] args) {
+        String s = "acbsfb";
+        System.out.println(getAllSubsetsII(s));
+    }
+
+    private static List<String> getAllSubsetsII(String s) {
+        List<String> result = new ArrayList<>();
+        if (s == null) {
+            return result;
+        }
+        char[] array = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        Arrays.sort(array);
+        helper(result, array, 0, sb);
+        return result;
+    }
+
+    private static void helper(List<String> result, char[] array, int index,  StringBuilder sb) {
+        //base case
+        if (index == array.length) {
+            result.add(sb.toString());
+            return;
+        }
+        sb.append(array[index]);
+        helper(result, array, index + 1, sb);
+        sb.deleteCharAt(sb.length() - 1);
+
+        //dealing with duplication
+        while (index + 1 < array.length - 1 && array[index] == array[index + 1]) {
+            index++;
+        }
+        helper(result, array, index + 1, sb);
+    }
+}
+
+2. All subSet with size K
+Given a set of characters represented by a String, return a list containing all subsets of the characters whose size is K.
+
+Assumptions
+
+There are no duplicate characters in the original set.
+
+​Examples
+
+Set = "abc", K = 2, all the subsets are [“ab”, “ac”, “bc”].
+
+Set = "", K = 0, all the subsets are [""].
+
+Set = "", K = 1, all the subsets are [].
+
+
+
+3. Valid parenthese I (laicode review)
+Given N pairs of parentheses “()”, return a list with all the valid permutations.
+
+Assumptions
+
+N > 0
+Examples
+
+N = 1, all valid permutations are ["()"]
+N = 3, all valid permutations are ["((()))", "(()())", "(())()", "()(())", "()()()"]
+//several base cases
+class Valid parentheseI{
+  public static void main(String[] args) {
+    System.out.println(getAllParentheses(n));
+  }
+  
+  private static List<String> getAllParentheses(int n) {
+    //assume n >= 1;
+    List<String> result = new ArrayList<>();
+    char[] array = new char[2 * n];
+    helper(array, result, 0, n, n);
+    return result;
+  }
+  
+  private void helper(char[] array, List<String> result, int index, int left, int right) {
+    //base case
+    if (left == 0 && right == 0) {
+      result.add(new String(array));
+      return;
+    }
+    //otherwise 1
+    if (left > 0) {
+      array[index] = '(';
+      helper(array, result, index + 1, left - 1, right);
+    }
+    if (right > left) {
+      array[index] = ')';
+      helper(array, result, index + 1, left, right - 1);
+    }
+  }
+}
+
+
+
+4.Valid parenthese I(leetcode version)
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+An input string is valid if:
+
+Open brackets must be closed by the same type of brackets.
+Open brackets must be closed in the correct order.
+Note that an empty string is also considered valid.
+
+//use a stack and a hashMap and the stack only used for left bracket.
+import java.lang.*;
+import java.util.*;
+
+public class AllParentheseILeetcode {
+    public static void main (String[] args) {
+        String s = "{}()){[[]]}";
+        String s2 = "{}(){[[]]}";
+        System.out.println(getResult(s2));
+    }
+
+    //for this question, I gonna use a stack only for storing all the possbile left bracket
+    //besides, I gonna create a hashmap to store 3 entries which are three key value pairs
+    private static boolean getResult(String s) {
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        Map<Character, Character> map = new HashMap<>();
+        map.put('}', '{');
+        map.put(')', '(');
+        map.put(']', '[');
+        /*
+        i
+        { } ( ) ) {  [ [ ] ] }
+
+         */
+        Deque<Character> stack = new ArrayDeque<>();
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if (ch == '{') {
+                stack.offerFirst(ch);
+            } else if (ch == '[') {
+                stack.offerFirst(ch);
+            } else if (ch == '(') {
+                stack.offerFirst(ch);
+            } else {
+                if (stack.isEmpty() || stack.peekFirst() != map.get(ch)) {
+                    return false;
+                }
+                stack.pollFirst();
+            }
+        }
+        return true;
+    }
+}
+
+5.All valid permuatation of parentheses
+
