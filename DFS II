@@ -174,4 +174,64 @@ public class AllParentheseILeetcode {
 }
 
 5.All valid permuatation of parentheses
+Get all valid permutations of l pairs of (), m pairs of <> and n pairs of {}.
 
+Assumptions
+
+l, m, n >= 0
+l + m + n > 0
+Examples
+
+l = 1, m = 1, n = 0, all the valid permutations are ["()<>", "(<>)", "<()>", "<>()"]
+
+//for this question, I gonna created a int[] array to store the initialize capacity of each bracket
+//also, I would use a stack to only store the left bracket
+
+    private static final char[] brackets = new char[]{'(',')','{','}','[',']'};
+    
+    private static List<String> allValidPermutationOfParenthese(int l, int m, int n) {
+        List<String> result = new ArrayList<>();
+        //each position at target represent the remains of each type of bracket
+        int[] target = new int[]{l, l, m, m, n, n};
+        StringBuilder sb = new StringBuilder();
+        int length = 2 * l + 2 * m + 2 * n;
+        Deque<Character> stack = new ArrayDeque<>();
+        helper(result, sb, target, length, stack);
+        return result;
+    }
+    
+    private static void helper(List<String> result, StringBuilder sb, int[] target, int length, Deque<Character> stack) {
+        //base case
+        if (sb.length() == length) {
+            result.add(sb.toString());
+            return;
+        }
+        /*
+        target = {1, 1, 1, 1, 0, 0};
+        brackets = {'(',')','{','}','[',']'};
+        */
+        for (int i = 0; i < target.length; i++) {
+            //for the case of i is an even number or i is an odd number;
+            if (i % 2 == 0) {
+                sb.append(bracket[i]);
+                stack.offerFirst(bracket[i]);
+                target[i]--;
+                helper(result, sb, target, length, stack);
+                stack.pollFirst();
+                sb.deleteCharAt(sb.length() - 1);
+                target[i]++;
+            } else {
+                if (!stack.isEmpty() && stack.peekFirst() == bracket[i - 1]) {
+                    sb.append(bracket[i]);
+                    stack.pollFirst();
+                    target[i]--;
+                    helper(reuslt, sb, target, length, stack);
+                    stack.offerFirst(bracket[i - 1]);
+                    target[i]++;
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+            }
+         }
+      }
+    }
+            
