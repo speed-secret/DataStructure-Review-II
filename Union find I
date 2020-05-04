@@ -1,0 +1,111 @@
+//Union find is a effective algorithm which could speed up the processing speed
+//it is basically an array based algorithm and it store it with each element's index seperately
+//then do the union operation
+//it won't increase the root but it did decrease the root due to the union operation
+//here are two video explane the fundamental knowledge of Union find which is really impressive and it also
+//mentioned about the path compression
+@William Fist
+https://www.youtube.com/watch?v=0jNmHPfA_yE
+https://www.youtube.com/watch?v=VHRhJWacxis
+//here are the example of utilizing the union find
+
+A 2d grid map of m rows and n columns is initially filled with water. 
+We may perform an addLand operation which turns the water at position (row, col) 
+into a land. Given a list of positions to operate, count the number of islands after 
+each addLand operation. An island is surrounded by water and is formed by connecting 
+adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example:
+
+Input: m = 3, n = 3, positions = [[0,0], [0,1], [1,2], [2,1]]
+Output: [1,1,2,3]
+Explanation:
+
+Initially, the 2d grid grid is filled with water. (Assume 0 represents water and 1 represents land).
+
+0 0 0
+0 0 0
+0 0 0
+Operation #1: addLand(0, 0) turns the water at grid[0][0] into a land.
+
+1 0 0
+0 0 0   Number of islands = 1
+0 0 0
+Operation #2: addLand(0, 1) turns the water at grid[0][1] into a land.
+
+1 1 0
+0 0 0   Number of islands = 1
+0 0 0
+Operation #3: addLand(1, 2) turns the water at grid[1][2] into a land.
+
+1 1 0
+0 0 1   Number of islands = 2
+0 0 0
+Operation #4: addLand(2, 1) turns the water at grid[2][1] into a land.
+
+1 1 0
+0 0 1   Number of islands = 3
+0 1 0
+
+1. the brutal force solution is to use DFS to traverse the current grid after each operation which would take the 
+time complexity of O(k*m*n);
+
+however, it is really slow and it waste a lot of info we had achieved before;
+
+2. Union find
+class Solution{ 
+  public List<Integer numIsLandsII(int m, int n, int[][] positions) {
+    List<Integer> result = new ArrayList<>();
+    if (positions == null || positions.length == 0 || positions[0].length == 0) {
+      return result;
+    }
+    int[] root = new int[m * n];
+    Arrays.fill(root, -1);
+    int count = 0;
+    int[] xDir = new int[]{1, -1, 0, 0};
+    int[] yDir = new int[]{0,  0,-1, 1};
+    for (int[] position : positions) {
+      int x = position[0];
+      int y = position[1];
+      int index = x * n + y;
+      //handle with the duplication
+      if (root[index] != -1) {
+        result.add(count);
+        continue;
+      }
+      count++;
+      root[index] = index;
+      for (int i = 0; i < 4; i++) {
+        int nr = x + xDirs[i];
+        int nc = y + yDirs[i];
+        //check if it is out of the boundary
+        if (isValid(m, n, nr, nc, root) {
+          int neighborIndex = r * n + c;
+          int neighborRoot = findRoot(root, neighborIndex);
+          if (neighborRoot != index) {
+            root[neighborRoot] = index;
+            count--;
+          }
+        }
+     }
+     result.add(count);
+   }
+   return result;
+ }
+ 
+ private boolean isValid(int m, int n, int r, int c, int[] root) {
+  if (r < 0 || c < 0 || r >= m | c >= n || root[r * n + c] == -1) {
+    return false;
+  }
+  return true;
+ }
+ 
+ private int findRoot(int[] root, int index) {
+  //path compression
+  while (index != root[index]) {
+    root[index] = root[root[index]);
+    index = root[index];
+  }
+  return index;
+ }
+} 
