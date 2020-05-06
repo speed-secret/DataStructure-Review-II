@@ -79,6 +79,67 @@ class Solution {
     }
 }
 
+//Due to the high time complexity, I got a way to achieve better
+//which is using a queue with a adjacent List
+
+public class Solution {
+ public int[] findOrder(int numCourses, int[][] prerequisites) {
+        //graph topoLogical question
+        if (numCourses <= 0) {
+            return new int[0];
+        }
+        //recode how many original points we currently have
+        //pre-set up the result int array;
+        
+        int[] inDegree = new int[numCourses];
+        int[] result = new int[numCourses];
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < prerequisites.length; i++) {
+          int pre = prerequisites[i][1];
+          int cur = prerequisites[i][0];
+          List<Integer> list = map.getOrDefault(pre, new ArrayList<>());
+          map.get(pre).add(cur);
+          inDegree[cur]++;
+        }
+        
+        //use a Queue to store all the point that inDegree equals to one
+        Deque<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < numCourses; i++) {
+          if (inDegree[i] == 0) {
+            queue.offerFirst(i);
+          }
+        }
+        
+        //find the result and if there is a cycle we just return an empty: new int[0]
+        int i = 0;
+        while (!queue.isEmpty()) {
+          //从original point开始向后找
+          int node = queue.pollLast();
+          result[i++] = node;
+          //find neighbors
+          //如果有循环的话这边if condition 横在这里会自动转到下一轮，
+          //然后会逐渐把所有的东西从queue里面poll出来
+          //最后结束然后会继续下去
+          if (map.containsKey(node)) {
+            for (Integer nei : map.get(node)) {
+              inDegree[nei]--;
+              if (inDegree[nei] == 0) {
+                queue.offerFirst(nei);
+              }
+            }
+          }
+        }
+        
+        if (i == numCourses) {
+          return result;
+        }
+        
+        return new int[0];
+      }
+}
+        
+
+
 2.Similarly I find the alien dictionary to find out if it is great
 There is a new alien language which uses the latin alphabet. However, 
 the order among letters are unknown to you. You receive a list of non-empty words from the dictionary, 
