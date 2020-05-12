@@ -241,4 +241,76 @@ public class Solution {
   }
 }
 
+//get a very interesting topic: about the tanjar algorithm
+//put it here to compare with two topo sort above
+class CriticalConnections{
+  public static void main(String[] args) {
+        int n = 4;
+        List<List<Integer>> connection = new ArrayList<>();
+        List<Integer> res1 = new ArrayList<>();
+        res1.add(0);
+        res1.add(1);
+        List<Integer> res2 = new ArrayList<>();
+        res2.add(1);
+        res2.add(2);
+        List<Integer> res3 = new ArrayList<>();
+        res3.add(2);
+        res3.add(0);
+        List<Integer> res4 = new ArrayList<>();
+        res4.add(1);
+        res4.add(3);
+        connection.add(0,res1);
+        connection.add(1,res2);
+        connection.add(2,res3);
+        connection.add(3,res4);
+        System.out.println(criticalConnections(n, connection));
+    }
+    
+    private static int time = 0;
+    public static List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
+        //感觉频率很高嘛，也不知道是不是常考题，
+        //学习一下tarjan's algorithm
+        //https://www.youtube.com/watch?v=TyWtx7q2D7Y
+        int[] disc = new int[n];
+        int[] low = new int[n];
+        List<Integer>[] graph = new ArrayList[n];
+        Arrays.fill(disc, -1);
+        for (int i = 0; i < n; i++) {
+          graph.get(i).add(new ArrayList<>());
+        }
+        for (int i = 0; i < n; i++) {
+          int from = connections.get(i).get(0);
+          int to = connections.get(i).get(1);
+          graph[from].add(to);
+          graph[to].add(from);
+        }
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+          if (disc[i] == -1) {
+            DFS(i, low, disc, result, graph, u);
+          }
+        }
+        return result;
+     }
+     
+    
+     private static void DFS(int u, int[] low, int[] disc, List<List<Integer>> res, List<Integer>[] graph, int pre) {
+        //base case
+        disc[u] = low[u] = time++;
+        for (int j = 0; j < graph[u].size(); j++) {
+          int v = graph[u].get(j);
+          if (v == pre) {
+            continue;
+          }
+          if (disc[v] == -1) {
+            DFS(v, low, disc, res, graph, u);
+          }
+          low[u] = Math.min(low[v], low[u]);
+          if (low[u] > disc[v]) {
+            res.add(Arrays.asList(u, v));
+          }
+        }
+      }
+   }
+
 
