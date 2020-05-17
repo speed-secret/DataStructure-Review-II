@@ -109,3 +109,7 @@ class Solution{
   return index;
  }
 } 
+
+//Union find combine with Put chair in the gym
+//How to do it?
+
