@@ -53,8 +53,12 @@ time complexity of O(k*m*n);
 however, it is really slow and it waste a lot of info we had achieved before;
 
 2. Union find
+//boundary check
+//union find path compression so use O(1) to find root;
+//there is a reference so we can check it out.
+//https://www.cnblogs.com/grandyang/p/5190419.html
 class Solution{ 
-  public List<Integer numIsLandsII(int m, int n, int[][] positions) {
+  public List<Integer> numIsLandsII(int m, int n, int[][] positions) {
     List<Integer> result = new ArrayList<>();
     if (positions == null || positions.length == 0 || positions[0].length == 0) {
       return result;
@@ -73,6 +77,8 @@ class Solution{
         result.add(count);
         continue;
       }
+      //count == 2;
+      //root[1] = 1;
       count++;
       root[index] = index;
       for (int i = 0; i < 4; i++) {
@@ -80,14 +86,17 @@ class Solution{
         int nc = y + yDirs[i];
         //check if it is out of the boundary
         if (isValid(m, n, nr, nc, root) {
-          int neighborIndex = r * n + c;
+          int neighborIndex = nr * n + nc;
           int neighborRoot = findRoot(root, neighborIndex);
+          //既然是isValid，那么如果他们此时的root的不同又却因为
+          //他们是相邻的岛屿，那么就需要合并root；
+          //然后减减count；
           if (neighborRoot != index) {
             root[neighborRoot] = index;
             count--;
           }
         }
-     }
+      }
      result.add(count);
    }
    return result;
@@ -105,6 +114,8 @@ class Solution{
   while (index != root[index]) {
     root[index] = root[root[index]);
     index = root[index];
+    //or we can changed to 
+    //index = root[root[index]];
   }
   return index;
  }
@@ -112,4 +123,8 @@ class Solution{
 
 //Union find combine with Put chair in the gym
 //How to do it?
+//就可以同时从健身器材的位置出发
+//然后统一设置成-1
+//看看走多少步能够cover完所有的位置；
+//然后再计算cost；
 
