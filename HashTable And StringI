@@ -1,0 +1,136 @@
+1.Laicode 67. Top K Frequent Words
+https://app.laicode.io/app/problem/67
+
+Given a composition with different kinds of words, return a list of the top K most frequent words in the composition.
+
+Assumptions
+
+the composition is not null and is not guaranteed to be sorted
+K >= 1 and K could be larger than the number of distinct words in the composition, in this case, just return all the distinct words
+Return
+
+a list of words ordered from most frequent one to least frequent one (the list could be of size K or smaller than K)
+Examples
+
+Composition = ["a", "a", "b", "b", "b", "b", "c", "c", "c", "d"], top 2 frequent words are [“b”, “c”]
+Composition = ["a", "a", "b", "b", "b", "b", "c", "c", "c", "d"], top 4 frequent words are [“b”, “c”, "a", "d"]
+Composition = ["a", "a", "b", "b", "b", "b", "c", "c", "c", "d"], top 5 frequent words are [“b”, “c”, "a", "d"]
+
+public List<String> topKFrequent(String[] combo, int k) {
+      List<String> result = new ArrayList<>();
+      if (combo == null || combo.length == 0) {
+        return combo;
+      }
+      Map<String, Integer> map = getMap(combo);
+      PriorityQueue<String> maxHeap = new PriorityQueue<>(k, new 
+      Comparator<String>() {
+        @Override
+        public int compare(String ch1, String ch2) {
+          if (map.get(ch1) == map.get(ch2)) {
+            return 0;
+          }
+          /*****************************************************
+          //maxHeap的写法！！！
+          return map.get(ch1) - map.get(ch2) > 0 ? -1 : 1; 
+          /*****************************************************
+        }
+      });
+      for (String s : map.keySet()) {
+        maxHeap.offer(s);
+      }
+      /* 优化前
+      while (k > 0) {
+        if (!maxHeap.isEmpty()) {
+          result.add(maxHeap.poll());
+        }
+        k--;
+      }
+      return getResult(result);
+      */
+      /* 优化后：
+      String[] ans = size < k ? new String[size] : new String[k];
+      while (k > 0) {
+        if (!maxHeap.isEmpty()) {
+          ans[i++] = maxHeap.poll();
+        }
+        k--;
+      }
+      return ans;
+    }
+
+    private Map<String, Integer> getMap(String[] composition) {
+      Map<String, Integer> map = new HashMap<>();
+      for (String str : composition) {
+        map.put(str, map.getOrDefault(str, 0) + 1);
+      }
+      return map;
+    }
+
+    /********************这里就不需要了************************
+    private String[] getResult(List<String> result) {
+      int size = result.size();
+      String[] ans = new String[size];
+      for (int i = 0; i < size; i++) {
+        ans[i] = result.get(i);
+      }
+      return ans;
+    }
+    ********************这里就不需要了************************/
+}
+
+总结：这个题目其实用Minheap 和maxHeap都行，关键在于有一个正确的逻辑作为支撑
+然后分析时间复杂度的时候要根据每个步骤的具体实际消耗作为分析的根本情况；
+用了Result作为过渡条件
+最终成就ans；
+
+对本解法来说，首先建立hashMap需要O(N)的时间
+然后这个的maxHeap就是扫描了PQ当中的所有元素o(NlogN)
+最后拿到结果是O(KlogN)，然后把result当中的结果过渡到String[] array当中来的话语就是O(N)
+所以拢共是O(NlogN)
+
+2. Laicode 68 Missing NUmber
+
+Given an integer array of size N - 1, containing all the numbers from 1 to N except one, find the missing number.
+
+Assumptions
+
+The given array is not null, and N >= 1
+Examples
+
+A = {2, 1, 4}, the missing number is 3
+A = {1, 2, 3}, the missing number is 4
+A = {}, the missing number is 1
+
+//use bit operation and use xor apersend to fight its missing number
+private int findMissingNumber(int[] array, int N) {
+  //numerical way of solution
+  int sum = N * (N - 1) / 2;
+  int sumArray = 0;
+  for (int i = 0; i < array.length; i++) {
+    sumArray += array[i];
+  }
+  return sum - sumArray;
+}
+
+//use XOR
+//xor 相同为零，不同为壹
+//xor 相同为零，不同为壹
+private int findMissingNumberII(int[] array) {
+  int n = array.length + 1;
+  int xor = 0;
+  for (int i = 1; i <=n ; i++) {
+    xor ^= i;
+  }
+  for (int i : array) {
+    xor ^= i;
+  }
+  return xor;
+}
+
+总结：这样做什么道理是对的
+就是因为xor如果扫两遍
+一遍是1-N
+另一边是array
+那就能够把遗漏的留下来
+而相同的都能够互相消除掉；
+    
