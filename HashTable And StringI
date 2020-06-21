@@ -185,9 +185,9 @@ private int[] reOrder(int[] array) {
             return array;
       }
       if (array.length % 2 == 0) {
-            return reOrder(array, 0, array.length - 1);
+            reOrder(array, 0, array.length - 1);
       } else {
-            return reOrder(array, 0, array.length - 2);
+            reOrder(array, 0, array.length - 2);
       }
       return array;
 }
@@ -258,3 +258,12 @@ private List<Integer> getAllIndices(String l, String s) {
       }
       return result;
   }
+  
+  private Map<Character, Integer> getCount(String sh){
+    Map<Character, Integer> map = new HashMap<>();
+    for(char ch: sh.toCharArray()){
+        map.put(ch, map.getOrDefault(ch, 0) + 1);
+    }
+    return map;
+  }
+ 
