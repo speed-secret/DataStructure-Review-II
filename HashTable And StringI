@@ -134,3 +134,127 @@ private int findMissingNumberII(int[] array) {
 那就能够把遗漏的留下来
 而相同的都能够互相消除掉；
     
+3.Reverse String Shift by xxx
+private String reverseStringByN(String s, int n) {
+      if (s == null || s.length() || n % s.length() == 0) {
+            return s;
+      }
+      n = n % s.length();
+      char[] array = s.toCharArray();
+      reverse(array, 0, array.length - 1);
+      reverse(array, 0, n - 1);
+      reverse(array, n, array.length - 1);
+      return new String(array);
+}
+
+private void reverse(char[] array, int left, int right) {
+      while (left < right) {
+            char temp = array[left];
+            array[left] = array[right];
+            array[right] = temp;
+            left++;
+            right--;
+      }
+}
+
+4.Reorder
+Given an array of elements, reorder it as follow:
+
+{ N1, N2, N3, …, N2k } → { N1, Nk+1, N2, Nk+2, N3, Nk+3, … , Nk, N2k }
+
+{ N1, N2, N3, …, N2k+1 } → { N1, Nk+1, N2, Nk+2, N3, Nk+3, … , Nk, N2k, N2k+1 }
+
+Try to do it in place.
+
+Assumptions
+
+The given array is not null
+Examples
+
+{ 1, 2, 3, 4, 5, 6} → { 1, 4, 2, 5, 3, 6 }
+
+{ 1, 2, 3, 4, 5, 6, 7, 8 } → { 1, 5, 2, 6, 3, 7, 4, 8 }
+
+{ 1, 2, 3, 4, 5, 6, 7 } → { 1, 4, 2, 5, 3, 6, 7 }
+
+//Mindset:
+check the odd or even length of the array
+
+private int[] reOrder(int[] array) {
+      if (array == null ||array.length == 0) {
+            return array;
+      }
+      if (array.length % 2 == 0) {
+            return reOrder(array, 0, array.length - 1);
+      } else {
+            return reOrder(array, 0, array.length - 2);
+      }
+      return array;
+}
+
+private void reOrder(int[] array, int left, int right) {
+      //base case
+      int size = right - left;
+      if (size <= 2) {
+            return;
+      }
+      int mid = left + size / 2;
+      int lmid = left + size / 4;
+      int rmid = left + 3 * size / 4;
+      reverse(array, lmid, mid - 1);
+      reverse(array, mid, rmid - 1);
+      reverse(array, lmid, rmid - 1);
+      reOrder(array, left, left + (lmid - left) * 2 - 1);
+      reOrder(array, left + (lmid - left) * 2, right);
+}
+            
+5.All anagram
+
+Find all occurrence of anagrams of a given string s in a given string l. 
+Return the list of starting indices.
+
+Assumptions
+
+sh is not null or empty.
+lo is not null.
+Examples
+
+l = "abcbac", s = "ab", return [0, 3] since the substring with length 2
+starting from index 0/3 are all anagrams of "ab" ("ab", "ba").
+
+private List<Integer> getAllIndices(String l, String s) {
+      List<Integer> result = new ArrayList<>();
+      //corner case
+      //assume l, s neither is none
+      if (l.length() < s.length()) {
+            return result;
+      }
+      int match = 0;
+      char[] map = getMap(s);
+      for (int fast = 0; fast < l.length(); fast++) {
+            char ch = l.charAt(fast);
+            Integer count = map.get(ch);
+            if (count != null) {
+                  map.get(ch, count - 1);
+                  if (count == 1) {
+                        match++;
+                  }
+            }
+            
+            if (fast >=s.length()) {
+                  ch = l.charAt(fast - 1);
+                  count = map.get(ch);
+                  if (count != null) {
+                        map.get(ch, count + 1);
+                        if (count == 0) {
+                              match--;
+                        }
+                  }
+            }
+            
+            if (match == map.size()) {
+                  result.add(fast - s.length() + 1);
+            }
+      }
+      return result;
+  }
